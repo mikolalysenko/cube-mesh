@@ -1,0 +1,26 @@
+{
+  "name": "cube-mesh",
+  "version": "0.0.0",
+  "description": "Generates subdivided cube meshes",
+  "main": "cube.js",
+  "dependencies": {
+    "fuse-vertices": "~0.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mikolalysenko/cube-mesh.git"
+  },
+  "keywords": [
+    "cube",
+    "mesh",
+    "subdivide"
+  ],
+  "author": "Mikola Lysenko",
+  "license": "BSD",
+  "gitHead": "1453e9bc50a87e40f904de4ea43e39b1fbfc26d9",
+  "readmeFilename": "README.md"
+}
