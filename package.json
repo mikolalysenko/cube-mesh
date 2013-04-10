@@ -1,15 +1,18 @@
 {
   "name": "cube-mesh",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Generates subdivided cube meshes",
   "main": "cube.js",
   "dependencies": {
     "dup": "~0.0.0",
     "grid-mesh": "~0.1.0",
     "simplicial-disjoint-union": "~0.0.0",
-    "fuse-vertices": "~0.1.1"
+    "fuse-vertices": "~0.1.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "tap": "~0.4.1",
+    "euler-characteristic": "~0.0.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
