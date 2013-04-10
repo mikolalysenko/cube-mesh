@@ -1,10 +1,13 @@
 {
   "name": "cube-mesh",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "Generates subdivided cube meshes",
   "main": "cube.js",
   "dependencies": {
-    "fuse-vertices": "~0.0.0"
+    "dup": "~0.0.0",
+    "grid-mesh": "~0.1.0",
+    "simplicial-disjoint-union": "~0.0.0",
+    "fuse-vertices": "~0.1.1"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,60 +1,82 @@
 "use strict"
 
 var fuseVertices = require("fuse-vertices")
+  , disjointUnion = require("simplicial-disjoint-union")
+  , gridMesh = require("grid-mesh")
+  , dup = require("dup")
+
+function defaultArr(v) {
+  if(typeof v === "number") {
+    return dup(3, v)
+  }
+  if(v && v.length === 3) {
+    return v
+  }
+  return dup(3, 1)
+}
 
 //Creates a cubical mesh
-// resolution is an integer representing number of subdivisions per linear dimension
-// scale is a 3d vector representing the scale of the cube
 function cubeMesh(resolution, scale) {
-  scale = typeof(scale) === "number" ? [scale, scale, scale] : (scale || [1.0, 1.0, 1.0]);
-  var radius = resolution >> 1;
-  var side_len = 2*radius + 1;
-  function p(x,y,s) { 
-    return x + side_len * (y + side_len * s); 
+
+  //Unpack default arguments
+  resolution = defaultArr(resolution)
+  scale = defaultArr(scale)
+  
+  var positions = []
+    , cells = []
+    , o  = [0,0,0]
+    , dx = [0,0,0]
+    , dy = [0,0,0]
+    , i, j, k, side
+    , u, v
+  
+  for(i=0; i<3; ++i) {
+    resolution[i] = resolution[i]|0
+    if(resolution[i] <= 0) {
+      return { cells: [], positions: [] }
+    }
   }
   
-  var positions = new Array(6 * side_len * side_len);
-  var faces = [];  
+  for(i=0; i<3; ++i) {
+    for(j=0; j<3; ++j) {
+      o[j] = dx[j] = dy[j] = 0
+    }
+    
+    u = (i+1)%3
+    v = (i+2)%3
+    
+    o[i] = -scale[i] / 2.0
+    o[u] = -scale[u] / 2.0
+    o[v] = -scale[v] / 2.0
+    dx[u] = scale[u] / resolution[u]
+    dy[v] = scale[v] / resolution[v]
   
-  for(var d=0; d<3; ++d) {
-    var u = (d+1)%3;
-    var v = (d+2)%3;
-    
-    for(var s=0; s<2; ++s) {
-      var f = 2*d + s;
-      var x = new Array(3);
+    for(j=0; j<2; ++j) {
+      side = gridMesh(resolution[u], resolution[v], o, dx, dy)
+      cells = disjointUnion(cells, side.cells, positions.length)
+      positions = positions.concat(side.positions)
       
-      x[u] = -radius;
-      x[v] = -radius;
-      x[d] = (1 - 2*s) * radius;
-    
-      for(var j=0; j<side_len; ++j, ++x[v]) {
-        x[u] = -radius;
-        for(var i=0; i<side_len; ++i, ++x[u]) {
-          var pos = new Array(3);
-          for(var k=0; k<3; ++k) {
-            pos[k] = x[k] * scale[k] / radius;
-          }
-        
-          positions[p(i, j, f)] = pos;
-          
-          if(i < side_len-1 && j < side_len-1) {
-            if(s) {
-              faces.push([ p(i,j,f), p(i,j+1,f), p(i+1,j,f) ]);
-              faces.push([ p(i+1,j,f), p(i,j+1,f), p(i+1,j+1,f) ]);          
-            } else {
-              faces.push([ p(i,j,f), p(i+1,j,f), p(i,j+1,f) ]);
-              faces.push([ p(i,j+1,f), p(i+1,j,f), p(i+1,j+1,f) ]);
-            }
-          }
-        }
+      for(k=0; k<3; ++k) {
+        o[k] = -o[k]
+        dx[k] = -dx[k]
+        dy[k] = -dy[k]
       }
     }
   }
 
-  //Glue 6 faces together and return
-  var tol = 0.5 * Math.min(scale[0], Math.min(scale[1], scale[2])) / radius;
-  return fuseVertices(positions, faces, tol);
-};
+  //Glue 6 sides together
+  var mag = 1e20
+  for(i=0; i<3; ++i) {
+    mag = Math.min(mag, Math.abs(scale[i]) / resolution[i])
+  }
+  mag = 1e-3 * mag
+  console.log(positions, cells, mag)
+  var fused = fuseVertices(cells, positions, mag)
+  console.log(fused)
+  return {
+    positions: fused.positions,
+    cells: fused.cells
+  }
+}
 
 module.exports = cubeMesh
