@@ -70,9 +70,7 @@ function cubeMesh(resolution, scale) {
     mag = Math.min(mag, Math.abs(scale[i]) / resolution[i])
   }
   mag = 1e-3 * mag
-  console.log(positions, cells, mag)
   var fused = fuseVertices(cells, positions, mag)
-  console.log(fused)
   return {
     positions: fused.positions,
     cells: fused.cells

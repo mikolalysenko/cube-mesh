@@ -1,6 +1,6 @@
 {
   "name": "cube-mesh",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Generates subdivided cube meshes",
   "main": "cube.js",
   "dependencies": {
